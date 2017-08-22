@@ -23,17 +23,17 @@ class Game:
         while True:
             try:
                 winner = self.next_move()
-                break
+                return winner
             except NoMoreMoves:
                 continue
 
     def next_move(self):
-        logging.info('Player {}\'s move'.format(self.current_player + 1))
+        logging.debug('Player {}\'s move'.format(self.current_player + 1))
         player = self.players[self.current_player]
 
         for move in player.get_moves(self.board):
             try:
-                logging.info('Playing square {}'.format(move))
+                logging.debug('Playing square {}'.format(move))
                 self.make_move(move)
                 self.print_board()
                 game_over, winner = self.game_over()
@@ -46,7 +46,7 @@ class Game:
 
                 break  # Valid move but no winner
             except InvalidMove:
-                logging.info('Bad move')
+                logging.debug('Bad move')
                 continue
 
         self.current_player = 1 - self.current_player
@@ -62,7 +62,7 @@ class Game:
         for triplet in (
                 [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
                 [0, 3, 6], [1, 4, 7], [2, 4, 8],  # Columns
-                [0, 4, 8], [2, 4, 6]              # Diagonals
+                [0, 4, 8], [2, 4, 6]  # Diagonals
         ):
             if self.winner(triplet):
                 return True, self.winner(triplet)
@@ -80,11 +80,17 @@ class Game:
             return self.board[triplet[0]]
 
     def print_board(self):
-        logging.info(
+        logging.debug(
             '\n{}|{}|{}'
             '\n{}|{}|{}'
             '\n{}|{}|{}'.format(*self.board))
 
+
 if __name__ == '__main__':
-    game = Game([Player(), Player()])
-    game.play()
+    results = {0: 0, 1: 0, 2: 0}
+
+    for i in range(10000):
+        game = Game([Player(True), Player()], i % 2)
+        results[game.play()] += 1
+
+    logging.info(results)
