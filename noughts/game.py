@@ -87,10 +87,26 @@ class Game:
 
 
 if __name__ == '__main__':
-    results = {0: 0, 1: 0, 2: 0}
+    players = 500
+    results = {}
+    for i in range(1, players):
+        results[i] = 0
 
-    for i in range(10000):
-        game = Game([Player(True), Player()], i % 2)
-        results[game.play()] += 1
+    for i in range(1, players):
+        for j in range(1, players):
+            for k in range(2):
+                logging.debug('{} vs. {}'.format(i, j))
+                game = Game([Player(seed=i), Player(seed=j)], i % 2)
+                winner = game.play()
+                if winner == 1:
+                    logging.debug('{} wins!'.format(i))
+                    results[i] += 1
+                elif winner == 2:
+                    logging.debug('{} wins!'.format(j))
+                    results[j] += 1
 
-    logging.info(results)
+    best_win = 0
+    for k, v in results.iteritems():
+        if v > best_win:
+            best_win = v
+            logging.info('{} had {} wins'.format(k, v))
